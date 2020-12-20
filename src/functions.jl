@@ -7,24 +7,21 @@ function add_event!(scheduler, fun, when::Now, t, args...; id="", description=""
     add_event!(scheduler, fun, scheduler.time, args...; id=id, description=description, kwargs...)
 end
 
-function add_event!(scheduler, fun, when::At, t, args...; id="",  description="", kwargs...)
+function add_event!(scheduler, fun, when::At, t, args...; id="", description="", kwargs...)
     add_event!(scheduler, fun, t, args...; id=id, description=description, kwargs...)
 end
 
-function add_event!(scheduler, fun, when::After, t, args...; id="",  description="", kwargs...)
+function add_event!(scheduler, fun, when::After, t, args...; id="", description="", kwargs...)
     add_event!(scheduler, fun, scheduler.time + t, args...; id=id, description=description, kwargs...)
 end
 
-function add_event!(scheduler, fun, when::Every, t, args...; id="",  description="", kwargs...)
+function add_event!(scheduler, fun, when::Every, t, args...; id="", description="", kwargs...)
     function f(args...; kwargs...) 
-        add_event!(scheduler, fun, now, t, args...; id=id,  description=description, kwargs...)
-        add_event!(scheduler, fun, every, t, args...; id=id,  description=description, kwargs...)
+        fun1 = ()->fun(args...; kwargs...)
+        fun1()
+        add_event!(scheduler, fun, every, t, args...; id=id, description=description, kwargs...)
     end
-    add_event!(scheduler, f, after, t, args...; id=id,  description=description, kwargs...)
-
-    # add_event!(scheduler, fun, after, t, args...; id=id,  description=description, kwargs...)
-    # add_event!(scheduler, f, after, t, args...; id=id,  description=description, kwargs...)
-    # add_event!(scheduler, fun, every, t, args...; id=id,  description=description, kwargs...)
+    add_event!(scheduler, f, after, t, args...; id=id, description=description, kwargs...)
 end
 
 function remove_events!(scheduler)
