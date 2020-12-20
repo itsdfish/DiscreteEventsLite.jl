@@ -57,7 +57,7 @@ function run!(scheduler, until=Inf)
 end
 
 function is_running(s, until)
-    !isempty(s.events) && s.running && s.time ≤ until
+    !isempty(s.events) && s.running && peek(s.events).first.time ≤ until
 end
 
 function last_event!(scheduler, until)
@@ -68,3 +68,9 @@ function last_event!(scheduler, until)
     return nothing 
 end
   
+function remove_events!(scheduler, id, f=(x,id)->x.first.id == id)
+    events = filter(x->f(x, id), scheduler.events)
+    for event in events
+        delete!(scheduler.events, event.first)
+    end
+end
