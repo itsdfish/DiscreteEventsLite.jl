@@ -1,5 +1,6 @@
 module DiscreteEventsLite
-
-# Write your package code here.
-
+    using DataStructures
+    export Scheduler, Event, run, schedule, remove_event!
+    include("structs.jl")
+    include("functions.jl")
 end
