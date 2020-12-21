@@ -34,4 +34,4 @@ For more information, use the help function:
 
 ## Extending
 
-The functionality of the package can be extended by creating subtypes of `AbstractEvent` and/or `AbstractScheduler`, and use multiple dispatch add desired behavior. 
+The functionality of the package can be extended by creating subtypes of `AbstractEvent` and/or `AbstractScheduler`, and use multiple dispatch to add desired behavior. 
