@@ -1,9 +1,9 @@
 # DiscreteEventsLite
 
 DiscereteEventsLite is a lightweight package for running discrete event simulations. In DiscreteEventsLite, events are registered to a priority queue and executed in temporal sequence. 
-Some inspiration for this package was taken from [DiscreteEvents](https://github.com/pbayer/DiscreteEvents.jl), which is a comprehensive framework for discrete event simulation. 
+Some inspiration for this package was taken from [DiscreteEvents](https://github.com/pbayer/DiscreteEvents.jl), which is a well-designed, comprehensive framework for discrete event simulation. 
 
-The package you should use will depend on your goals. If you want a package that is lightweight and easily hackable, this package might be suitable for you. Otherwise, you might prefer a full-featured framework, such as [DiscreteEvents](https://github.com/pbayer/DiscreteEvents.jl).
+I created this package because I wanted something simple and hackable. In addition, I needed something with the ability to remove events based on id or other criteria, optionally print event traces, and optionally log events. The package you should use will depend on your goals. If you want a package that is lightweight and easily hackable, this package might be suitable for you. Otherwise, you might prefer a full-featured framework, such as [DiscreteEvents](https://github.com/pbayer/DiscreteEvents.jl). You might also checkout [SimJulia](https://simjuliajl.readthedocs.io/en/stable/welcome.html), or [EventStimulation](https://github.com/bkamins/EventSimulation.jl) for other approaches.
 
 ## Usage
 
