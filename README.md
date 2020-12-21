@@ -31,3 +31,7 @@ For more information, use the help function:
 ] DiscreteEventsLite
 ] add_event!
 ````
+
+## Extending
+
+The functionality of the package can be extended by creating subtypes of `AbstractEvent` and/or `AbstractScheduler`, and use multiple dispatch add desired behavior. 
