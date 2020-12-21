@@ -1,1 +1,33 @@
 # DiscreteEventsLite
+
+DiscereteEventsLite is a lightweight package for running discrete event simulations. In DiscreteEventsLite, events are registered to a priority queue and executed in temporal sequence. 
+Some inspiration for this package was taken from [DiscreteEvents](https://github.com/pbayer/DiscreteEvents.jl), which is a comprehensive framework for discrete event simulation. 
+
+The package you should use will depend on your goals. If you want a package that is lightweight and easily hackable, this package might be suitable for you. Otherwise, you might prefer a full-featured framework, such as [DiscreteEvents](https://github.com/pbayer/DiscreteEvents.jl).
+
+## Usage
+
+````julia
+using DiscreteEventsLite
+# Define some functions
+f(a; k) = println(a, k)
+g(scheduler, message) = add_event!(scheduler, f, 5.0, message; k=2)
+
+# Create a scheduler
+scheduler = Scheduler(store=true)
+# some examples of event scheduling
+add_event!(scheduler, f, after, .99, "hi "; k=1, description="some event")
+add_event!(scheduler, g, at, 2.0, scheduler, "I'm done "; id = "1")
+add_event!(scheduler, stop!, at, 10.5, scheduler)
+add_event!(scheduler, ()->(), every, 1.0; description="repeating")
+# Run the model
+run!(scheduler, 11)
+# Optionally print the events if store=true
+replay_events(scheduler)
+````
+For more information, use the help function:
+````julia
+
+] DiscreteEventsLite
+] add_event!
+````
