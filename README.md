@@ -11,15 +11,15 @@ I created this package because I wanted something simple and hackable. In additi
 using DiscreteEventsLite
 # Define some functions
 f(a; k) = println(a, k)
-g(scheduler, message) = add_event!(scheduler, f, 5.0, message; k=2)
+g(scheduler, message) = register!(scheduler, f, 5.0, message; k=2)
 
 # Create a scheduler
 scheduler = Scheduler(store=true)
 # some examples of event scheduling
-add_event!(scheduler, f, after, .99, "hi "; k=1, description="some event")
-add_event!(scheduler, g, at, 2.0, scheduler, "I'm done "; id = "1")
-add_event!(scheduler, stop!, at, 10.5, scheduler)
-add_event!(scheduler, ()->(), every, 1.0; description="repeating")
+register!(scheduler, f, after, .99, "hi "; k=1, description="some event")
+register!(scheduler, g, at, 2.0, scheduler, "I'm done "; id = "1")
+register!(scheduler, stop!, at, 10.5, scheduler)
+register!(scheduler, ()->(), every, 1.0; description="repeating")
 # Run the model
 run!(scheduler, 11)
 # Optionally print the events if store=true
@@ -29,7 +29,7 @@ For more information, use the help function:
 ````julia
 
 ] DiscreteEventsLite
-] add_event!
+] register!
 ````
 
 ## Extending

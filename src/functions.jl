@@ -1,5 +1,5 @@
 """
-add_event!
+register!
 
 An interface for adding events to the scheduler. 
 
@@ -14,33 +14,33 @@ An interface for adding events to the scheduler.
 
 Function signiture:
 ```julia 
-add_event!(scheduler, fun, when, t, args...; id="", description="", kwargs...)
+register!(scheduler, fun, when, t, args...; id="", description="", kwargs...)
 ```
 """
-function add_event!(scheduler, fun, t, args...; id="", description="", kwargs...)
+function register!(scheduler, fun, t, args...; id="", description="", kwargs...)
     event = Event(()->fun(args...; kwargs...), t, id, description)
     enqueue!(scheduler.events, event, t)
 end
 
-function add_event!(scheduler, fun, when::Now, t, args...; id="", description="", kwargs...)
-    add_event!(scheduler, fun, scheduler.time, args...; id=id, description=description, kwargs...)
+function register!(scheduler, fun, when::Now, t, args...; id="", description="", kwargs...)
+    register!(scheduler, fun, scheduler.time, args...; id=id, description=description, kwargs...)
 end
 
-function add_event!(scheduler, fun, when::At, t, args...; id="", description="", kwargs...)
-    add_event!(scheduler, fun, t, args...; id=id, description=description, kwargs...)
+function register!(scheduler, fun, when::At, t, args...; id="", description="", kwargs...)
+    register!(scheduler, fun, t, args...; id=id, description=description, kwargs...)
 end
 
-function add_event!(scheduler, fun, when::After, t, args...; id="", description="", kwargs...)
-    add_event!(scheduler, fun, scheduler.time + t, args...; id=id, description=description, kwargs...)
+function register!(scheduler, fun, when::After, t, args...; id="", description="", kwargs...)
+    register!(scheduler, fun, scheduler.time + t, args...; id=id, description=description, kwargs...)
 end
 
-function add_event!(scheduler, fun, when::Every, t, args...; id="", description="", kwargs...)
+function register!(scheduler, fun, when::Every, t, args...; id="", description="", kwargs...)
     function f(args...; kwargs...) 
         fun1 = ()->fun(args...; kwargs...)
         fun1()
-        add_event!(scheduler, fun, every, t, args...; id=id, description=description, kwargs...)
+        register!(scheduler, fun, every, t, args...; id=id, description=description, kwargs...)
     end
-    add_event!(scheduler, f, after, t, args...; id=id, description=description, kwargs...)
+    register!(scheduler, f, after, t, args...; id=id, description=description, kwargs...)
 end
 
 function remove_events!(scheduler)
@@ -95,30 +95,27 @@ function run!(s::AbstractScheduler, until=Inf)
         s.store ? push!(s.complete_events, event) : nothing
         s.trace ? print_event(event) : nothing
     end
-    if s.trace
-        if s.running 
-             println(s.time, " ", "done") 
-        else 
-            println(s.time, " ", "paused")
-        end
-    end
+    s.trace && !s.running ? print_event(s.time, "", "stopped") : nothing
     return nothing
 end
 
 function is_running(s, until)
-    !isempty(s.events) && s.running && peek(s.events).first.time ≤ until
+    !isempty(s.events) && s.running && 
+        peek(s.events).first.time ≤ until
 end
 
 function last_event!(scheduler, until)
     if until == Inf 
     else
-        add_event!(scheduler, ()->(), after, until)
+        register!(scheduler, ()->(), after, until; description = "done")
     end
     return nothing 
 end
 
-function print_event(event)
-    println("time:  ", event.time, "   id   ", event.id, "    ", event.description)
+print_event(event) = print_event(event.time, event.id, event.description)
+
+function print_event(time, id, description)
+    println("time:  ", time, "   id   ", id, "    ", description)
 end
 
 """
