@@ -15,13 +15,15 @@ Event <: AbstractEvent
 - `fun`: a function
 - `time`: time of function call 
 - `id`: an event id
+- `type`: type of event
 - `description`: a description of the event
 """
 mutable struct Event{F<:Function} <: AbstractEvent
     fun::F 
     time::Float64
     id::String
-    description::String 
+    type::String 
+    description::String
 end
 
 abstract type AbstractScheduler end 

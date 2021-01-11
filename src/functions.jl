@@ -17,34 +17,30 @@ Function signiture:
 register!(scheduler, fun, when, t, args...; id="", description="", kwargs...)
 ```
 """
-function register!(scheduler, fun, t, args...; id="", description="", kwargs...)
-    event = Event(()->fun(args...; kwargs...), t, id, description)
+function register!(scheduler, fun, t, args...; id="", type="", description="", kwargs...)
+    event = Event(()->fun(args...; kwargs...), t, id, type, description)
     enqueue!(scheduler.events, event, t)
 end
 
-function register!(scheduler, fun, when::Now, t, args...; id="", description="", kwargs...)
-    register!(scheduler, fun, scheduler.time, args...; id=id, description=description, kwargs...)
+function register!(scheduler, fun, when::Now, args...; id="", type="", description="", kwargs...)
+    register!(scheduler, fun, scheduler.time, args...; id=id, type=type, description=description, kwargs...)
 end
 
-function register!(scheduler, fun, when::At, t, args...; id="", description="", kwargs...)
-    register!(scheduler, fun, t, args...; id=id, description=description, kwargs...)
+function register!(scheduler, fun, when::At, t, args...; id="", type="", description="", kwargs...)
+    register!(scheduler, fun, t, args...; id=id, type=type, description=description, kwargs...)
 end
 
-function register!(scheduler, fun, when::After, t, args...; id="", description="", kwargs...)
-    register!(scheduler, fun, scheduler.time + t, args...; id=id, description=description, kwargs...)
+function register!(scheduler, fun, when::After, t, args...; id="", type="", description="", kwargs...)
+    register!(scheduler, fun, scheduler.time + t, args...; id=id, type=type, description=description, kwargs...)
 end
 
-function register!(scheduler, fun, when::Every, t, args...; id="", description="", kwargs...)
+function register!(scheduler, fun, when::Every, t, args...; id="", type="", description="", kwargs...)
     function f(args...; kwargs...) 
         fun1 = ()->fun(args...; kwargs...)
         fun1()
-        register!(scheduler, fun, every, t, args...; id=id, description=description, kwargs...)
+        register!(scheduler, fun, every, t, args...; id=id, type=type, description=description, kwargs...)
     end
-    register!(scheduler, f, after, t, args...; id=id, description=description, kwargs...)
-end
-
-function remove_events!(scheduler)
-
+    register!(scheduler, f, after, t, args...; id=id, type=type, description=description, kwargs...)
 end
 
 """
@@ -115,7 +111,7 @@ end
 print_event(event) = print_event(event.time, event.id, event.description)
 
 function print_event(time, id, description)
-    println("time:  ", time, "   id   ", id, "    ", description)
+    println("time:  ", round(time, digits=3), "   id   ", id, "    ", description)
 end
 
 """
