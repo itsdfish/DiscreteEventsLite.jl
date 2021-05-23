@@ -23,24 +23,24 @@ function register!(scheduler, fun, t, args...; id="", type="", description="", k
 end
 
 function register!(scheduler, fun, when::Now, args...; id="", type="", description="", kwargs...)
-    register!(scheduler, fun, scheduler.time, args...; id=id, type=type, description=description, kwargs...)
+    register!(scheduler, fun, scheduler.time, args...; id, type, description, kwargs...)
 end
 
 function register!(scheduler, fun, when::At, t, args...; id="", type="", description="", kwargs...)
-    register!(scheduler, fun, t, args...; id=id, type=type, description=description, kwargs...)
+    register!(scheduler, fun, t, args...; id, type, description, kwargs...)
 end
 
 function register!(scheduler, fun, when::After, t, args...; id="", type="", description="", kwargs...)
-    register!(scheduler, fun, scheduler.time + t, args...; id=id, type=type, description=description, kwargs...)
+    register!(scheduler, fun, scheduler.time + t, args...; id, type, description, kwargs...)
 end
 
 function register!(scheduler, fun, when::Every, t, args...; id="", type="", description="", kwargs...)
     function f(args...; kwargs...) 
         fun1 = ()->fun(args...; kwargs...)
         fun1()
-        register!(scheduler, fun, every, t, args...; id=id, type=type, description=description, kwargs...)
+        register!(scheduler, fun, every, t, args...; id, type, description, kwargs...)
     end
-    register!(scheduler, f, after, t, args...; id=id, type=type, description=description, kwargs...)
+    register!(scheduler, f, after, t, args...; id, type, description, kwargs...)
 end
 
 """
