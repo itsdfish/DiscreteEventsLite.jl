@@ -11,7 +11,7 @@ const every = Every()
 abstract type AbstractEvent end 
 
 """
-Event <: AbstractEvent
+    Event <: AbstractEvent
 - `fun`: a function
 - `time`: time of function call 
 - `id`: an event id

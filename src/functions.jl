@@ -1,7 +1,9 @@
 """
-register!
+    register!(scheduler, fun, when, t, args...; id="", description="", kwargs...)
 
 An interface for adding events to the scheduler. 
+
+# Arguments 
 
 - `scheduler`: an event scheduler
 - `fun`: a function to execute
@@ -10,12 +12,11 @@ An interface for adding events to the scheduler.
 - `args...`: optional positional arguments for `fun`
 - `id`: optional id string 
 - `description`: optional description
+
+# Keywords
+
 - `kwargs...`: option keyword arguments for `fun`
 
-Function signiture:
-```julia 
-register!(scheduler, fun, when, t, args...; id="", description="", kwargs...)
-```
 """
 function register!(scheduler, fun, t, args...; id="", type="", description="", kwargs...)
     event = Event(()->fun(args...; kwargs...), t, id, type, description)
@@ -44,12 +45,13 @@ function register!(scheduler, fun, when::Every, t, args...; id="", type="", desc
 end
 
 """
-`stop!`: stop simulation 
+    stop!(scheduler)
 
-Function signiture:
-````julia
-stop!(scheduler)
-````
+Stops simulation 
+
+# Arguments
+
+- `scheduler`: an event scheduler 
 """
 function stop!(scheduler)
     scheduler.running = false
@@ -57,12 +59,13 @@ end
 
 
 """
-`reset!`: reset simulation 
+    reset!(scheduler)
 
-Function signiture:
-````julia
-reset!(scheduler)
-````
+Resets time to 0 and empties event queue
+
+# Arguments
+
+- `scheduler`: an event scheduler 
 """
 function reset!(scheduler)
     scheduler.running = true
@@ -71,14 +74,14 @@ function reset!(scheduler)
 end
 
 """
-run!: run simulation 
--`s`: scheduler
-- `until`: run until 
+    run!(s::AbstractScheduler, until=Inf)
 
-Function signiture:
-````julia
-run!(s::AbstractScheduler, until=Inf)
-````
+Run simulation until specified time
+
+# Arguments
+
+- `scheduler`: an event scheduler 
+- `until`: time at which simulation ends
 """
 function run!(s::AbstractScheduler, until=Inf)
     events = s.events
@@ -111,7 +114,8 @@ end
 print_event(event) = print_event(event.time, event.id, event.description)
 
 function print_event(time, id, description)
-    println("time:  ", round(time, digits=3), "   id   ", id, "    ", description)
+    @printf("time:  %0.3f", time) 
+    println("   id   ", id, "    ", description)
 end
 
 """
