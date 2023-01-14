@@ -19,7 +19,7 @@ An interface for adding events to the scheduler.
 
 """
 function register!(scheduler, fun, t, args...; id="", type="", description="", kwargs...)
-    event = Event(()->fun(args...; kwargs...), t, id, type, description)
+    event = Event(() -> fun(args...; kwargs...), t, id, type, description)
     enqueue!(scheduler.events, event, t)
 end
 
@@ -37,7 +37,7 @@ end
 
 function register!(scheduler, fun, when::Every, t, args...; id="", type="", description="", kwargs...)
     function f(args...; kwargs...) 
-        fun1 = ()->fun(args...; kwargs...)
+        fun1 = () -> fun(args...; kwargs...)
         fun1()
         register!(scheduler, fun, every, t, args...; id, type, description, kwargs...)
     end
@@ -84,18 +84,22 @@ Run simulation until specified time
 - `until`: time at which simulation ends
 """
 function run!(s::AbstractScheduler, until=Inf)
-    events = s.events
     last_event!(s, until)
     while is_running(s, until)
-        event = dequeue!(events)
-        new_time = event.time
-        s.time = new_time
-        event.fun()
-        s.store ? push!(s.complete_events, event) : nothing
-        s.trace ? print_event(event) : nothing
+        execute!(s)
     end
     s.trace && !s.running ? print_event(s.time, "", "stopped") : nothing
     return nothing
+end
+
+function execute!(s::AbstractScheduler)
+    event = dequeue!(s.events)
+    new_time = event.time
+    s.time = new_time
+    event.fun()
+    s.store ? push!(s.complete_events, event) : nothing
+    s.trace ? print_event(event) : nothing
+    return nothing 
 end
 
 function is_running(s, until)

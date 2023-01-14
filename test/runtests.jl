@@ -39,20 +39,20 @@ using SafeTestsets
 
     scheduler = Scheduler()
     register!(scheduler, f, every, 1.0, "hi "; k=1)
-    register!(scheduler, ()->(), at, 10.5)
+    register!(scheduler, () -> (), at, 10.5)
     run!(scheduler, 10)
     @test scheduler.time == 10
 
     scheduler = Scheduler()
     register!(scheduler, f, every, 1.0, "hi "; k=1)
-    register!(scheduler, ()->(), at, 10.5)
+    register!(scheduler, () -> (), at, 10.5)
     register!(scheduler, stop!, 5.0, scheduler)
     run!(scheduler, 10)
     @test scheduler.time == 5
 
     scheduler = Scheduler()
     register!(scheduler, f, every, 1.0, "hi "; k=1)
-    register!(scheduler, ()->(), at, 10.5)
+    register!(scheduler, () -> (), at, 10.5)
     register!(scheduler, stop!, 5.0, scheduler)
     DiscreteEventsLite.reset!(scheduler)
     @test scheduler.time == 0
@@ -60,7 +60,7 @@ using SafeTestsets
 
     scheduler = Scheduler(;store=true)
     register!(scheduler, f, every, 1.0, "hi "; k=1)
-    register!(scheduler, ()->(), at, 10.5)
+    register!(scheduler, () -> (), at, 10.5)
     run!(scheduler, 11)
     @test length(scheduler.complete_events) == 13
 end
