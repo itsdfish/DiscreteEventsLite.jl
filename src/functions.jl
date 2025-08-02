@@ -18,25 +18,73 @@ An interface for adding events to the scheduler.
 - `kwargs...`: option keyword arguments for `fun`
 
 """
-function register!(scheduler, fun, t, args...; id="", type="", description="", kwargs...)
+function register!(
+    scheduler,
+    fun,
+    t,
+    args...;
+    id = "",
+    type = "",
+    description = "",
+    kwargs...
+)
     event = Event(() -> fun(args...; kwargs...), t, id, type, description)
     enqueue!(scheduler.events, event, t)
 end
 
-function register!(scheduler, fun, when::Now, args...; id="", type="", description="", kwargs...)
+function register!(
+    scheduler,
+    fun,
+    when::Now,
+    args...;
+    id = "",
+    type = "",
+    description = "",
+    kwargs...
+)
     register!(scheduler, fun, scheduler.time, args...; id, type, description, kwargs...)
 end
 
-function register!(scheduler, fun, when::At, t, args...; id="", type="", description="", kwargs...)
+function register!(
+    scheduler,
+    fun,
+    when::At,
+    t,
+    args...;
+    id = "",
+    type = "",
+    description = "",
+    kwargs...
+)
     register!(scheduler, fun, t, args...; id, type, description, kwargs...)
 end
 
-function register!(scheduler, fun, when::After, t, args...; id="", type="", description="", kwargs...)
+function register!(
+    scheduler,
+    fun,
+    when::After,
+    t,
+    args...;
+    id = "",
+    type = "",
+    description = "",
+    kwargs...
+)
     register!(scheduler, fun, scheduler.time + t, args...; id, type, description, kwargs...)
 end
 
-function register!(scheduler, fun, when::Every, t, args...; id="", type="", description="", kwargs...)
-    function f(args...; kwargs...) 
+function register!(
+    scheduler,
+    fun,
+    when::Every,
+    t,
+    args...;
+    id = "",
+    type = "",
+    description = "",
+    kwargs...
+)
+    function f(args...; kwargs...)
         fun1 = () -> fun(args...; kwargs...)
         fun1()
         register!(scheduler, fun, every, t, args...; id, type, description, kwargs...)
@@ -56,7 +104,6 @@ Stops simulation
 function stop!(scheduler)
     scheduler.running = false
 end
-
 
 """
     reset!(scheduler)
@@ -83,7 +130,7 @@ Run simulation until specified time
 - `scheduler`: an event scheduler 
 - `until`: time at which simulation ends
 """
-function run!(s::AbstractScheduler, until=Inf)
+function run!(s::AbstractScheduler, until = Inf)
     last_event!(s, until)
     while is_running(s, until)
         execute!(s)
@@ -99,26 +146,26 @@ function execute!(s::AbstractScheduler)
     event.fun()
     s.store ? push!(s.complete_events, event) : nothing
     s.trace ? print_event(event) : nothing
-    return nothing 
+    return nothing
 end
 
 function is_running(s, until)
-    !isempty(s.events) && s.running && 
+    !isempty(s.events) && s.running &&
         peek(s.events).first.time ≤ until
 end
 
 function last_event!(scheduler, until)
-    if until == Inf 
+    if until == Inf
     else
         register!(scheduler, ()->(), after, until; description = "done")
     end
-    return nothing 
+    return nothing
 end
 
 print_event(event) = print_event(event.time, event.id, event.description)
 
 function print_event(time, id, description)
-    @printf("time:  %0.3f", time) 
+    @printf("time:  %0.3f", time)
     println("   id   ", id, "    ", description)
 end
 
@@ -133,7 +180,7 @@ Function signiture:
 remove_events!(scheduler, id, f=(x,id)->x.first.id == id)
 ````
 """
-function remove_events!(scheduler, id, f=(x,id)->x.first.id == id)
+function remove_events!(scheduler, id, f = (x, id)->x.first.id == id)
     events = filter(x->f(x, id), scheduler.events)
     for event in events
         delete!(scheduler.events, event.first)
@@ -150,6 +197,6 @@ replay_events(s::AbstractScheduler)
 """
 function replay_events(s::AbstractScheduler)
     for event in s.complete_events
-       print_event(event)
+        print_event(event)
     end
 end

@@ -8,7 +8,7 @@ const at = At()
 const now = Now()
 const every = Every()
 
-abstract type AbstractEvent end 
+abstract type AbstractEvent end
 
 """
     Event <: AbstractEvent
@@ -18,15 +18,15 @@ abstract type AbstractEvent end
 - `type`: type of event
 - `description`: a description of the event
 """
-mutable struct Event{F<:Function} <: AbstractEvent
-    fun::F 
+mutable struct Event{F <: Function} <: AbstractEvent
+    fun::F
     time::Float64
     id::String
-    type::String 
+    type::String
     description::String
 end
 
-abstract type AbstractScheduler end 
+abstract type AbstractScheduler end
 
 """
 Scheduler <: AbstractScheduler
@@ -37,7 +37,7 @@ Scheduler <: AbstractScheduler
 - `store`: will store a vector of completed events if true
 - `complete_events`: an optional vector of completed events
 """
-mutable struct Scheduler{PQ<:PriorityQueue,E} <: AbstractScheduler
+mutable struct Scheduler{PQ <: PriorityQueue, E} <: AbstractScheduler
     events::PQ
     time::Float64
     running::Bool
@@ -53,7 +53,13 @@ Constructor for Scheduler with default keyword values:
 Scheduler(;event=Event, time=0.0, running=true, trace=false, store=false)
 ```
 """
-function Scheduler(;event=Event, time=0.0, running=true, trace=false, store=false)
-    events = PriorityQueue{event,Float64}()
+function Scheduler(;
+    event = Event,
+    time = 0.0,
+    running = true,
+    trace = false,
+    store = false
+)
+    events = PriorityQueue{event, Float64}()
     return Scheduler(events, time, running, trace, store, Vector{event}())
 end
