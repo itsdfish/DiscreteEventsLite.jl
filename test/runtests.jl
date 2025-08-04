@@ -5,7 +5,7 @@ using SafeTestsets
     f(a; k) = (a, k)
     scheduler = Scheduler()
     register!(scheduler, f, after, 0.99, "hi "; k = 1, description = "123")
-    event = peek(scheduler.events).first
+    event = first(scheduler.events).first
     @test event.description == "123"
     run!(scheduler, 11)
     @test scheduler.time ≈ 11
@@ -20,7 +20,7 @@ using SafeTestsets
 
     scheduler = Scheduler()
     register!(scheduler, f, after, 0.99, "hi "; k = 1)
-    event = dequeue!(scheduler.events)
+    event, _ = popfirst!(scheduler.events)
     v1, v2 = event.fun()
     @test v1 == "hi "
     @test v2 == 1
@@ -29,7 +29,7 @@ using SafeTestsets
     register!(scheduler, f, after, 0.99, "hi "; k = 1, id = "1")
     register!(scheduler, f, after, 1.99, "hi "; k = 1, id = "2")
     remove_events!(scheduler, "1")
-    event = dequeue!(scheduler.events)
+    event, _ = popfirst!(scheduler.events)
     @test event.id == "2"
 
     scheduler = Scheduler()

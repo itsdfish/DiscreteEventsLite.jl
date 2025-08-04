@@ -29,7 +29,7 @@ function register!(
     kwargs...
 )
     event = Event(() -> fun(args...; kwargs...), t, id, type, description)
-    enqueue!(scheduler.events, event, t)
+    push!(scheduler.events, event => t)
 end
 
 function register!(
@@ -140,8 +140,7 @@ function run!(s::AbstractScheduler, until = Inf)
 end
 
 function execute!(s::AbstractScheduler)
-    event = dequeue!(s.events)
-    new_time = event.time
+    event, new_time = popfirst!(s.events)
     s.time = new_time
     event.fun()
     s.store ? push!(s.complete_events, event) : nothing
@@ -151,7 +150,7 @@ end
 
 function is_running(s, until)
     !isempty(s.events) && s.running &&
-        peek(s.events).first.time ≤ until
+        first(s.events).first.time ≤ until
 end
 
 function last_event!(scheduler, until)

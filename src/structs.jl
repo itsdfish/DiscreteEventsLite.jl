@@ -12,6 +12,9 @@ abstract type AbstractEvent end
 
 """
     Event <: AbstractEvent
+
+#Fields 
+
 - `fun`: a function
 - `time`: time of function call 
 - `id`: an event id
@@ -29,7 +32,9 @@ end
 abstract type AbstractScheduler end
 
 """
-Scheduler <: AbstractScheduler
+    Scheduler <: AbstractScheduler
+
+# Fields
 - `events`: a priority queue of events
 - `time`: current time of the system 
 - `running`: simulation can run if true
