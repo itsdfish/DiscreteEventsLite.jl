@@ -17,9 +17,20 @@ Use help for more information, e.i.
 """
 module DiscreteEventsLite
 using DataStructures, Printf
-export Scheduler, Event, run!, remove_event!, stop!
-export register!, after, at, now, every, remove_events!, reset!
+export Scheduler
+export Event
+export run!
+export remove_event!
+export stop!
+export register!
+export after
+export at
+export now
+export every
+export remove_events!
+export reset!
 export replay_events
+
 include("structs.jl")
 include("functions.jl")
 end

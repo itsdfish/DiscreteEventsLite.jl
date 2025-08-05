@@ -1,5 +1,14 @@
 """
-    register!(scheduler, fun, when, t, args...; id="", description="", kwargs...)
+    register!(
+        scheduler,
+        fun,
+        t,
+        args...;
+        id = "",
+        type = "",
+        description = "",
+        kwargs...
+    )
 
 An interface for adding events to the scheduler. 
 
@@ -7,16 +16,14 @@ An interface for adding events to the scheduler.
 
 - `scheduler`: an event scheduler
 - `fun`: a function to execute
-- `when`: timing for the execution of `fun`. Options: `at`, `now`, `every`, `after`
 - `t`: time value associated with `when` 
 - `args...`: optional positional arguments for `fun`
-- `id`: optional id string 
-- `description`: optional description
 
 # Keywords
 
+- `id`: optional id string 
+- `description`: optional description
 - `kwargs...`: option keyword arguments for `fun`
-
 """
 function register!(
     scheduler,
@@ -102,7 +109,7 @@ Stops simulation
 - `scheduler`: an event scheduler 
 """
 function stop!(scheduler)
-    scheduler.running = false
+    scheduler.can_run = false
 end
 
 """
@@ -115,7 +122,7 @@ Resets time to 0 and empties event queue
 - `scheduler`: an event scheduler 
 """
 function reset!(scheduler)
-    scheduler.running = true
+    scheduler.can_run = true
     scheduler.time = 0.0
     empty!(scheduler.events)
 end
@@ -128,7 +135,7 @@ Run simulation until specified time
 # Arguments
 
 - `scheduler`: an event scheduler 
-- `until`: time at which simulation ends
+- `until=Inf`: time at which simulation ends
 """
 function run!(s::AbstractScheduler, until = Inf)
     last_event!(s, until)
@@ -149,8 +156,7 @@ function execute!(s::AbstractScheduler)
 end
 
 function is_running(s, until)
-    !isempty(s.events) && s.running &&
-        first(s.events).first.time ≤ until
+    return !isempty(s.events) && s.can_run && first(s.events).first.time ≤ until
 end
 
 function last_event!(scheduler, until)
@@ -169,33 +175,37 @@ function print_event(time, id, description)
 end
 
 """
-remove_events!: remove events by id 
--`s`: scheduler
-- `until`: run until 
-- `f`: removal function. Defaults to exact match.
+    remove_events!(scheduler, id, f = (x, id) -> x.first.id == id)
 
-Function signiture:
-````julia
-remove_events!(scheduler, id, f=(x,id)->x.first.id == id)
+Remove events by id 
+
+# Arguments
+
+-`scheduler`: an event scheduler
+- `id`: event id
+- `f`: removal function. Defaults to exact match.
 ````
 """
-function remove_events!(scheduler, id, f = (x, id)->x.first.id == id)
+function remove_events!(scheduler, id, f = (x, id) -> x.first.id == id)
     events = filter(x->f(x, id), scheduler.events)
     for event in events
         delete!(scheduler.events, event.first)
     end
+    return nothing
 end
 
 """
-replay_events: print completed events if stored 
+    replay_events(s::AbstractScheduler) 
 
-Function signiture:
-````julia
-replay_events(s::AbstractScheduler)
-````
+Print completed events 
+
+# Arguments
+
+- `scheduler`: an event scheduler
 """
 function replay_events(s::AbstractScheduler)
     for event in s.complete_events
         print_event(event)
     end
+    return nothing
 end
