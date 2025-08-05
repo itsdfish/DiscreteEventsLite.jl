@@ -1,7 +1,79 @@
+function register!(
+    scheduler,
+    fun,
+    t,
+    args...;
+    id = "",
+    type = "",
+    description = "",
+    kwargs...
+)
+    event = Event(() -> fun(args...; kwargs...), t, id, type, description)
+    return register!(scheduler, event, t)
+end
+
+"""
+    register!(scheduler, event::AbstractEvent, t::Real)
+
+An interface for adding events to the scheduler. 
+
+# Arguments 
+
+- `scheduler`: an event scheduler
+- `event::AbstractEvent`: an event 
+- `t::Real`: time value associated with `when` 
+"""
+function register!(scheduler, event::AbstractEvent, t::Real)
+    push!(scheduler.events, event => t)
+    return nothing
+end
+
 """
     register!(
         scheduler,
         fun,
+        when,
+        args...;
+        id = "",
+        type = "",
+        description = "",
+        kwargs...
+    )
+
+An interface for adding events to the scheduler. 
+
+# Arguments 
+
+- `scheduler`: an event scheduler
+- `fun`: a function to execute during the event 
+- `when`::Now: schedules the event to execute at the current time 
+- `args...`: optional positional arguments for `fun`
+
+# Keywords
+
+- `id`: optional id string 
+- `type`: the type of event 
+- `description`: optional description
+- `kwargs...`: optional keyword arguments for `fun`
+"""
+function register!(
+    scheduler,
+    fun,
+    when::Now,
+    args...;
+    id = "",
+    type = "",
+    description = "",
+    kwargs...
+)
+    return register!(scheduler, fun, scheduler.time, args...; id, type, description, kwargs...)
+end
+
+"""
+    register!(
+        scheduler,
+        fun,
+        when,
         t,
         args...;
         id = "",
@@ -15,43 +87,18 @@ An interface for adding events to the scheduler.
 # Arguments 
 
 - `scheduler`: an event scheduler
-- `fun`: a function to execute
+- `fun`: a function to execute during the event 
+- `when`: when ∈ {every, after, at} determines the time at which the event occurs relative to `t`
 - `t`: time value associated with `when` 
 - `args...`: optional positional arguments for `fun`
 
 # Keywords
 
 - `id`: optional id string 
+- `type`: the type of event 
 - `description`: optional description
-- `kwargs...`: option keyword arguments for `fun`
+- `kwargs...`: optional keyword arguments for `fun`
 """
-function register!(
-    scheduler,
-    fun,
-    t,
-    args...;
-    id = "",
-    type = "",
-    description = "",
-    kwargs...
-)
-    event = Event(() -> fun(args...; kwargs...), t, id, type, description)
-    push!(scheduler.events, event => t)
-end
-
-function register!(
-    scheduler,
-    fun,
-    when::Now,
-    args...;
-    id = "",
-    type = "",
-    description = "",
-    kwargs...
-)
-    register!(scheduler, fun, scheduler.time, args...; id, type, description, kwargs...)
-end
-
 function register!(
     scheduler,
     fun,
@@ -63,7 +110,7 @@ function register!(
     description = "",
     kwargs...
 )
-    register!(scheduler, fun, t, args...; id, type, description, kwargs...)
+    return register!(scheduler, fun, t, args...; id, type, description, kwargs...)
 end
 
 function register!(
@@ -77,7 +124,7 @@ function register!(
     description = "",
     kwargs...
 )
-    register!(scheduler, fun, scheduler.time + t, args...; id, type, description, kwargs...)
+    return register!(scheduler, fun, scheduler.time + t, args...; id, type, description, kwargs...)
 end
 
 function register!(
@@ -96,7 +143,7 @@ function register!(
         fun1()
         register!(scheduler, fun, every, t, args...; id, type, description, kwargs...)
     end
-    register!(scheduler, f, after, t, args...; id, type, description, kwargs...)
+    return register!(scheduler, f, after, t, args...; id, type, description, kwargs...)
 end
 
 """
